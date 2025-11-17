@@ -1,5 +1,6 @@
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
+import FeaturedCarousel from './components/FeaturedCarousel'
+import ModelShowcase from './components/ModelShowcase'
 import Features from './components/Features'
 import Collection from './components/Collection'
 import Footer from './components/Footer'
@@ -9,7 +10,8 @@ function App() {
     <div className="min-h-screen bg-black">
       <Navbar />
       <main>
-        <Hero />
+        <FeaturedCarousel />
+        <ModelShowcase />
         <Collection />
         <Features />
       </main>
