@@ -1,8 +1,20 @@
+import { useEffect, useState } from 'react'
 import { Menu, Search, ShoppingBag } from 'lucide-react'
+import useScrollReveal from '../hooks/useScrollReveal'
 
 export default function Navbar() {
+  useScrollReveal()
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-20 border-b border-white/10 bg-black/50 backdrop-blur">
+    <header className={`fixed top-0 left-0 right-0 z-20 border-b border-white/10 transition-colors ${scrolled ? 'bg-black/70 backdrop-blur' : 'bg-transparent'}`} data-reveal>
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16 text-white">
         <div className="flex items-center gap-3">
           <button className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-white/10" aria-label="menu">

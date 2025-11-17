@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
+import useScrollReveal from '../hooks/useScrollReveal'
 
 export default function FeaturedCarousel() {
+  useScrollReveal()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const scrollerRef = useRef(null)
@@ -39,7 +41,7 @@ export default function FeaturedCarousel() {
   )
 
   return (
-    <section className="relative w-full bg-black text-white py-12 sm:py-16 overflow-hidden">
+    <section className="relative w-full bg-black text-white pt-24 sm:pt-28 pb-12 sm:pb-16 overflow-hidden">
       {/* Subtle backdrop accents */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
@@ -48,11 +50,11 @@ export default function FeaturedCarousel() {
 
       <div className="max-w-6xl mx-auto px-6 relative">
         <div className="flex items-end justify-between mb-6">
-          <div>
+          <div data-reveal>
             <p className="uppercase tracking-[0.35em] text-xs text-zinc-400">Featured</p>
             <h1 className="mt-3 text-3xl sm:text-5xl font-semibold leading-tight">Essential Picks</h1>
           </div>
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2" data-reveal data-reveal-delay="120">
             <button aria-label="Previous" onClick={() => scrollByCards(-1)} className="h-10 w-10 grid place-items-center rounded-full border border-white/15 hover:bg-white hover:text-black transition-colors">
               <ChevronLeft size={18} />
             </button>
@@ -64,7 +66,7 @@ export default function FeaturedCarousel() {
 
         <div className="relative">
           {/* Mobile arrows overlay */}
-          <div className="sm:hidden absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
+          <div className="sm:hidden absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none" data-reveal data-reveal-delay="150">
             <button onClick={() => scrollByCards(-1)} className="pointer-events-auto ml-2 h-8 w-8 grid place-items-center rounded-full bg-black/60 border border-white/15">
               <ChevronLeft size={16} />
             </button>
@@ -80,12 +82,14 @@ export default function FeaturedCarousel() {
             {loading ? (
               skeleton
             ) : items.length === 0 ? (
-              <div className="text-zinc-300">No featured products yet. Seed the catalog from the test page.</div>
+              <div className="text-zinc-300" data-reveal>No featured products yet. Seed the catalog from the test page.</div>
             ) : (
               items.map((p, idx) => (
                 <article
                   key={p.id || idx}
                   data-card
+                  data-reveal
+                  data-reveal-delay={String(60 * (idx % 6))}
                   className="group min-w-[280px] sm:min-w-[360px] lg:min-w-[420px] snap-start"
                 >
                   <div className="relative aspect-[5/6] rounded-2xl overflow-hidden border border-white/10 bg-white/5">

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import useScrollReveal from '../hooks/useScrollReveal'
 
 export default function Collection() {
+  useScrollReveal()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -32,18 +34,18 @@ export default function Collection() {
     <section id="collection" className="bg-black text-white py-16">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-end justify-between mb-8">
-          <h2 className="text-2xl sm:text-3xl font-semibold">New Arrivals</h2>
-          <a href="#" className="text-sm text-zinc-300 hover:text-white">View all</a>
+          <h2 className="text-2xl sm:text-3xl font-semibold" data-reveal>New Arrivals</h2>
+          <a href="#" className="text-sm text-zinc-300 hover:text-white" data-reveal data-reveal-delay="120">View all</a>
         </div>
 
         {loading ? (
           skeleton
         ) : items.length === 0 ? (
-          <div className="text-zinc-300">No products yet. Seed the catalog from the test page.</div>
+          <div className="text-zinc-300" data-reveal>No products yet. Seed the catalog from the test page.</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((p) => (
-              <article key={p.id} className="group border border-white/10 rounded-xl overflow-hidden bg-white/5">
+            {items.map((p, idx) => (
+              <article key={p.id} className="group border border-white/10 rounded-xl overflow-hidden bg-white/5" data-reveal data-reveal-delay={String(60 * (idx % 6))}>
                 {p.image && (
                   <div className="aspect-[4/5] overflow-hidden">
                     <img src={p.image} alt={p.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
