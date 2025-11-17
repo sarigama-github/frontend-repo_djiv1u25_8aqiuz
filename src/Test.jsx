@@ -4,30 +4,28 @@ function Test() {
   const [backendStatus, setBackendStatus] = useState('checking...')
   const [backendUrl, setBackendUrl] = useState('')
   const [databaseStatus, setDatabaseStatus] = useState(null)
+  const [seeding, setSeeding] = useState(false)
+  const [seedResult, setSeedResult] = useState(null)
 
   useEffect(() => {
     checkBackendConnection()
   }, [])
 
+  const getBaseUrl = () => import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+
   const checkBackendConnection = async () => {
     try {
-      // Get backend URL from environment variable
-      const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+      const baseUrl = getBaseUrl()
       setBackendUrl(baseUrl)
 
-      // Test basic backend connectivity
       const response = await fetch(`${baseUrl}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
 
       if (response.ok) {
         const data = await response.json()
         setBackendStatus(`✅ Connected - ${data.message || 'OK'}`)
-        
-        // Now test database connectivity
         await checkDatabaseConnection(baseUrl)
       } else {
         setBackendStatus(`❌ Failed - ${response.status} ${response.statusText}`)
@@ -43,9 +41,7 @@ function Test() {
     try {
       const response = await fetch(`${baseUrl}/test`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
 
       if (response.ok) {
@@ -56,6 +52,29 @@ function Test() {
       }
     } catch (error) {
       setDatabaseStatus({ error: `Database check failed - ${error.message}` })
+    }
+  }
+
+  const seedDatabase = async () => {
+    setSeeding(true)
+    setSeedResult(null)
+    const baseUrl = getBaseUrl()
+    try {
+      const res = await fetch(`${baseUrl}/api/seed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.detail || 'Seeding failed')
+      }
+      setSeedResult({ ok: true, message: data.message || `Seeded: ${data.count || 0} items` })
+    } catch (e) {
+      setSeedResult({ ok: false, message: e.message })
+    } finally {
+      setSeeding(false)
+      // Refresh DB status so user can see collections show up
+      checkDatabaseConnection(baseUrl)
     }
   }
 
@@ -103,6 +122,21 @@ function Test() {
                 <p className="text-gray-500 font-mono">Checking database...</p>
               )}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <button
+              onClick={seedDatabase}
+              disabled={seeding}
+              className={`w-full ${seeding ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'} text-white font-semibold py-2 px-4 rounded transition-colors`}
+            >
+              {seeding ? 'Seeding…' : 'Seed Catalog (Sample Products)'}
+            </button>
+            {seedResult && (
+              <p className={`text-sm ${seedResult.ok ? 'text-emerald-700' : 'text-red-600'}`}>
+                {seedResult.message}
+              </p>
+            )}
           </div>
 
           <button
